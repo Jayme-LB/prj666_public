@@ -5,14 +5,8 @@
 
   $numErrors = 0;
   $errorMsg = "";
-  $dbInfo = "";
-  
-  $dbHost = "";
-	$dbUser = "";
-	$dbPass = "";
-	$dbSchema = "";
 
-    // Validate the fields.
+  // Validate the fields.
   if ($_POST){
     $acUsername = $_POST["acUsername"];
     $acPassword = $_POST["acPassword"];

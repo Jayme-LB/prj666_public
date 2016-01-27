@@ -8,7 +8,7 @@
       <a href="test.php">PHP Info</a>
       <a href="signin.php">Sign In</a>
       <a href="accountCreation.php">Create Account</a>
-      <a href="resetPassword.php">Reset Password</a>
+      <a href="user/editUserProfile.php">Edit User Profile</a>
     </p>
     <h1>Welcome to the Open Data Visualizer!</h1>
     <p><b>
