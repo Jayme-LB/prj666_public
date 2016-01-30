@@ -3,39 +3,37 @@
   ini_set('display_errors', 'On');
   error_reporting(E_ALL | E_STRICT);
 
-  $numErrors = 0;
-  $errorMsg = "";
-
   // Validate the fields.
   if ($_POST){
-    $acUsername = $_POST["acUsername"];
+    $acUsername = trim($_POST["acUsername"], " \t\n\r\0\x0B");
     $acPassword = $_POST["acPassword"];
     $acPasswordConfirm = $_POST["acPasswordConfirm"];
     $acEmail = $_POST["acEmail"];
     $acMonth = $_POST["acMonth"];
     $acDay = $_POST["acDay"];
     $acYear = $_POST["acYear"];
-
+    
+    $errorMsg = "";
+    $dbErrorMsg = "";
+    
     // Check if password fields match.
     if($acPassword != $acPasswordConfirm){
-      $numErrors++;
-      $errorMsg .= "<br>Your passwords do not match.";
+      $errorMsg .= "<br><b>Your passwords do not match.</b>";
     }
     
-    // Open database connection.
-    $dbInfo = file('/home/jayme/files/dbinfo');
-		$dbHost = trim($dbInfo[0]);
-		$dbUser = trim($dbInfo[1]);
-		$dbPass = trim($dbInfo[2]);
-		$dbSchema = trim($dbInfo[3]);
-    // $mysqli = mysqli_connect($dbHost, $dbUser, $dbPass, $dbSchema);
-    // if (mysqli_connect_errno($mysqli)){
-      // echo "Database connection failed: " . mysqli_connect_error();
-    // }
-    
     // Create a new user account in the database when all fields are valid.
-    if ($numErrors == 0){
-      
+    if ($errorMsg !== ""){
+      // Open database connection.
+      $dbInfo = file('/home/jayme/files/dbinfo');
+      $dbHost = trim($dbInfo[0]);
+      $dbUser = trim($dbInfo[1]);
+      $dbPass = trim($dbInfo[2]);
+      $dbSchema = trim($dbInfo[3]);
+      $dbErrorMsg = "<br>You should only see this when all fields are good.";
+      $mysqli = mysqli_connect($dbHost, $dbUser, $dbPass, $dbSchema);
+      if (mysqli_connect_errno($mysqli)){
+        $dbErrorMsg = "Database connection failed: " . mysqli_connect_error();
+      }
     }
   }
 ?>
@@ -46,6 +44,13 @@
     <title>Account Creation - Open Data Visualizer</title>
   </head>
   <body>
+    <p>
+      <a href="/~jayme/index.php">Home</a>
+      <a href="/~jayme/signin.php">Sign In</a>
+      <a href="/~jayme/accountCreation.php">Create Account</a>
+      <a href="/~jayme/user/viewUserProfile.php">View User Profile</a>
+      <a href="/~jayme/user/editUserProfile.php">Edit User Profile</a>
+    </p>
     <h1>Account Creation</h1>
     <p>All fields are required.</p>
     <form method="post" action="accountCreation.php">
@@ -63,7 +68,7 @@
       <br><br>
       Date of Birth<br>
       Month:
-      <select id="acMonth" name="acMonth">
+      <select id="acMonth" name="acMonth" onchange="maxDay()">
         <option value="1">January</option>
         <option value="2">February</option>
         <option value="3">March</option>
@@ -85,8 +90,21 @@
       <input type="submit" value="Submit">
     </form>
     <?php
-      if ($numErrors == 0){
-        echo $errorMsg;
+      if ($_POST){
+        echo "<b>Username:</b>".$acUsername."<br>";
+        echo "<b>Password:</b>".$acPassword."<br>";
+        echo "<b>Confirm Password:</b>".$acPasswordConfirm."<br>";
+        echo "<b>Email:</b>".$acEmail."<br>";
+        echo "<b>DOB Month:</b>".$acMonth."<br>";
+        echo "<b>DOB Day:</b>".$acDay."<br>";
+        echo "<b>DOB Year:</b>".$acYear."<br>";
+        
+        if ($errorMsg !== ""){
+          echo $errorMsg;
+        }
+        if ($dbErrorMsg !== ""){
+          echo $dbErrorMsg;
+        }
       }
     ?>
   </body>
