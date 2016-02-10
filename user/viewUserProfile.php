@@ -18,7 +18,17 @@
       <a href="/~jayme/user/viewUserProfile.php">View User Profile</a>
       <a href="/~jayme/user/editUserProfile.php">Edit User Profile</a>
     </p>
+<?php
+  if (isset($_GET["id"])){
+?>
     <h1>View User Profile</h1>
     <p>To be implemented</p>
+<?php
+  }else{
+?>
+    <p>You are unable to access this page without an "id" in the URL.</p>
+<?php
+  }
+?>
   </body>
 </html>

@@ -3,39 +3,9 @@
   ini_set('display_errors', 'On');
   error_reporting(E_ALL | E_STRICT);
 
-  // Validate the fields.
-  if ($_POST){
-    $acUsername = trim($_POST["acUsername"], " \t\n\r\0\x0B");
-    $acPassword = $_POST["acPassword"];
-    $acPasswordConfirm = $_POST["acPasswordConfirm"];
-    $acEmail = $_POST["acEmail"];
-    $acMonth = $_POST["acMonth"];
-    $acDay = $_POST["acDay"];
-    $acYear = $_POST["acYear"];
-    
-    $errorMsg = "";
-    $dbErrorMsg = "";
-    
-    // Check if password fields match.
-    if($acPassword != $acPasswordConfirm){
-      $errorMsg .= "<br><b>Your passwords do not match.</b>";
-    }
-    
-    // Create a new user account in the database when all fields are valid.
-    if ($errorMsg !== ""){
-      // Open database connection.
-      $dbInfo = file('/home/jayme/files/dbinfo');
-      $dbHost = trim($dbInfo[0]);
-      $dbUser = trim($dbInfo[1]);
-      $dbPass = trim($dbInfo[2]);
-      $dbSchema = trim($dbInfo[3]);
-      $dbErrorMsg = "<br>You should only see this when all fields are good.";
-      $mysqli = mysqli_connect($dbHost, $dbUser, $dbPass, $dbSchema);
-      if (mysqli_connect_errno($mysqli)){
-        $dbErrorMsg = "Database connection failed: " . mysqli_connect_error();
-      }
-    }
-  }
+  require 'scripts/dbConnect.php';
+  require 'scripts/insertQueries.php';
+  require 'scripts/selectQueries.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -89,23 +59,63 @@
       <br><br>
       <input type="submit" value="Submit">
     </form>
-    <?php
-      if ($_POST){
-        echo "<b>Username:</b>".$acUsername."<br>";
-        echo "<b>Password:</b>".$acPassword."<br>";
-        echo "<b>Confirm Password:</b>".$acPasswordConfirm."<br>";
-        echo "<b>Email:</b>".$acEmail."<br>";
-        echo "<b>DOB Month:</b>".$acMonth."<br>";
-        echo "<b>DOB Day:</b>".$acDay."<br>";
-        echo "<b>DOB Year:</b>".$acYear."<br>";
-        
-        if ($errorMsg !== ""){
-          echo $errorMsg;
-        }
-        if ($dbErrorMsg !== ""){
-          echo $dbErrorMsg;
-        }
-      }
-    ?>
+<?php
+  // Validate the fields.
+  if ($_POST) {
+    $acUsername = trim($_POST["acUsername"], " \t\n\r\0\x0B"); // Remove trailing whitespace from the field.
+    $acPassword = $_POST["acPassword"];
+    $acPasswordConfirm = $_POST["acPasswordConfirm"];
+    $acEmail = $_POST["acEmail"];
+    $acMonth = $_POST["acMonth"];
+    $acDay = $_POST["acDay"];
+    $acYear = $_POST["acYear"];
+    
+    $errorMsg = "";
+    
+    // Username field.
+    if (strlen($acUsername) < 3){
+      $errorMsg .= "<br><b>Your username must have a minimum of 3 characters.</b>";
+    }
+    
+    // Check that the username does not exist already.
+    dbConnect();
+    if (usernameExists($acUsername)){
+      $errorMsg .= "<br><b>The chosen username already exists. Please insert a new one.</b>";
+    }
+    dbClose();
+    
+    // Password fields.
+    if ($acPassword != $acPasswordConfirm){
+      $errorMsg .= "<br><b>Your passwords do not match.</b>";
+    }
+    
+    if (strlen($acPassword) < 8){
+      $errorMsg .= "<br><b>Your password must have a minimum length of 8 characters.</b>";
+    }
+    
+    // Create a new user account in the database when all fields are valid.
+    if ($errorMsg !== ""){
+      $dob = $acYear."-".$acMonth."-".$acDay; // Date of Birth.
+      dbConnect();
+      addUser($acUsername, $acPassword, $acEmail, $dob);
+      dbClose();
+    }
+  
+    // Below is for debugging purposes.
+    echo "<b>Username:</b>".$acUsername."<br>";
+    echo "<b>Password:</b>".password_hash($acPassword, PASSWORD_DEFAULT)."<br>";
+    echo "<b>Confirm Password:</b>".$acPasswordConfirm."<br>";
+    echo "<b>Email:</b>".$acEmail."<br>";
+    echo "<b>DOB Month:</b>".$acMonth."<br>";
+    echo "<b>DOB Day:</b>".$acDay."<br>";
+    echo "<b>DOB Year:</b>".$acYear."<br>";
+    
+    if ($errorMsg !== ""){
+      echo "<p>We are unable to create an account because of the following:"
+      .$errorMsg
+      ."</p>";
+    }
+  }
+?>
   </body>
 </html>
