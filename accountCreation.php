@@ -3,9 +3,52 @@
   ini_set('display_errors', 'On');
   error_reporting(E_ALL | E_STRICT);
 
-  require 'scripts/dbConnect.php';
-  require 'scripts/insertQueries.php';
-  require 'scripts/selectQueries.php';
+  require_once 'scripts/dbConnect.php';
+  require_once 'scripts/selectQueries.php';
+  require_once 'scripts/insertQueries.php';
+  
+  // Validate the fields upon submission.
+  if ($_POST) {
+    $acUsername = trim($_POST["acUsername"], " \t\n\r\0\x0B"); // Remove trailing whitespace from the field.
+    $acPassword = $_POST["acPassword"];
+    $acPasswordConfirm = $_POST["acPasswordConfirm"];
+    $acEmail = $_POST["acEmail"];
+    $acMonth = $_POST["acMonth"];
+    $acDay = $_POST["acDay"];
+    $acYear = $_POST["acYear"];
+    
+    $errorMsg = "";
+    
+    // Username field.
+    if (strlen($acUsername) < 3){
+      $errorMsg .= "<br><b>Your username must have a minimum of 3 characters.</b>";
+    }
+    
+    // Check that the username does not exist already.
+    dbConnect();
+    if (usernameExists($acUsername)){
+      $errorMsg .= "<br><b>The chosen username already exists. Please insert a new one.</b>";
+    }
+    dbClose();
+    
+    // Password fields.
+    if ($acPassword != $acPasswordConfirm){
+      $errorMsg .= "<br><b>Your passwords do not match.</b>";
+    }
+    
+    if (strlen($acPassword) < 8){
+      $errorMsg .= "<br><b>Your password must have a minimum length of 8 characters.</b>";
+    }
+    
+    // Create a new user account in the database when all fields are valid.
+    if ($errorMsg !== ""){
+      $dob = $acYear."-".$acMonth."-".$acDay; // Date of Birth.
+      dbConnect();
+      addUser($acUsername, password_hash($acPassword, PASSWORD_DEFAULT), $acEmail, $dob);
+      dbClose();
+      header("Location: https://zenit.senecac.on.ca:9064/~jayme/index.php");
+    }
+  }
 ?>
 <!DOCTYPE html>
 <html>
@@ -60,47 +103,6 @@
       <input type="submit" value="Submit">
     </form>
 <?php
-  // Validate the fields.
-  if ($_POST) {
-    $acUsername = trim($_POST["acUsername"], " \t\n\r\0\x0B"); // Remove trailing whitespace from the field.
-    $acPassword = $_POST["acPassword"];
-    $acPasswordConfirm = $_POST["acPasswordConfirm"];
-    $acEmail = $_POST["acEmail"];
-    $acMonth = $_POST["acMonth"];
-    $acDay = $_POST["acDay"];
-    $acYear = $_POST["acYear"];
-    
-    $errorMsg = "";
-    
-    // Username field.
-    if (strlen($acUsername) < 3){
-      $errorMsg .= "<br><b>Your username must have a minimum of 3 characters.</b>";
-    }
-    
-    // Check that the username does not exist already.
-    dbConnect();
-    if (usernameExists($acUsername)){
-      $errorMsg .= "<br><b>The chosen username already exists. Please insert a new one.</b>";
-    }
-    dbClose();
-    
-    // Password fields.
-    if ($acPassword != $acPasswordConfirm){
-      $errorMsg .= "<br><b>Your passwords do not match.</b>";
-    }
-    
-    if (strlen($acPassword) < 8){
-      $errorMsg .= "<br><b>Your password must have a minimum length of 8 characters.</b>";
-    }
-    
-    // Create a new user account in the database when all fields are valid.
-    if ($errorMsg !== ""){
-      $dob = $acYear."-".$acMonth."-".$acDay; // Date of Birth.
-      dbConnect();
-      addUser($acUsername, $acPassword, $acEmail, $dob);
-      dbClose();
-    }
-  
     // Below is for debugging purposes.
     echo "<b>Username:</b>".$acUsername."<br>";
     echo "<b>Password:</b>".password_hash($acPassword, PASSWORD_DEFAULT)."<br>";
@@ -110,12 +112,11 @@
     echo "<b>DOB Day:</b>".$acDay."<br>";
     echo "<b>DOB Year:</b>".$acYear."<br>";
     
-    if ($errorMsg !== ""){
+    if (isset($errorMsg) && $errorMsg !== ""){
       echo "<p>We are unable to create an account because of the following:"
       .$errorMsg
       ."</p>";
     }
-  }
 ?>
   </body>
 </html>

@@ -26,4 +26,9 @@
     
     mysqli_query($dbQuery);
   }
+  
+  // This function will update any user info that was edited in the user's profile.
+  function updateUser(){
+    
+  }
 ?>
