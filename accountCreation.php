@@ -1,4 +1,4 @@
-<?php
+﻿<?php
   // For debugging purposes.
   ini_set('display_errors', 'On');
   error_reporting(E_ALL | E_STRICT);
@@ -8,7 +8,7 @@
   require_once 'scripts/insertQueries.php';
   
   // Validate the fields upon submission.
-  if ($_POST) {
+  if ($_POST){
     $acUsername = trim($_POST["acUsername"], " \t\n\r\0\x0B"); // Remove trailing whitespace from the field.
     $acPassword = $_POST["acPassword"];
     $acPasswordConfirm = $_POST["acPasswordConfirm"];
@@ -25,11 +25,11 @@
     }
     
     // Check that the username does not exist already.
-    dbConnect();
-    if (usernameExists($acUsername)){
+    $dbConn = dbConnect();
+    if (usernameExists($dbConn, $acUsername)){
       $errorMsg .= "<br><b>The chosen username already exists. Please insert a new one.</b>";
     }
-    dbClose();
+    
     
     // Password fields.
     if ($acPassword != $acPasswordConfirm){
@@ -42,11 +42,12 @@
     
     // Create a new user account in the database when all fields are valid.
     if ($errorMsg !== ""){
+      $dbMsg = "Starting connection";
       $dob = $acYear."-".$acMonth."-".$acDay; // Date of Birth.
-      dbConnect();
+      $dbConn = dbConnect();
       addUser($acUsername, password_hash($acPassword, PASSWORD_DEFAULT), $acEmail, $dob);
-      dbClose();
-      header("Location: https://zenit.senecac.on.ca:9064/~jayme/index.php");
+      mysqli_close($dbConn);
+      $dbMsg = "The connection should have gone through...";
     }
   }
 ?>
@@ -103,6 +104,7 @@
       <input type="submit" value="Submit">
     </form>
 <?php
+  if ($_POST){
     // Below is for debugging purposes.
     echo "<b>Username:</b>".$acUsername."<br>";
     echo "<b>Password:</b>".password_hash($acPassword, PASSWORD_DEFAULT)."<br>";
@@ -116,7 +118,10 @@
       echo "<p>We are unable to create an account because of the following:"
       .$errorMsg
       ."</p>";
+    }elseif (isset($dbMsg) && $dbMsg !== ""){
+      echo $dbMsg;
     }
+  }
 ?>
   </body>
 </html>

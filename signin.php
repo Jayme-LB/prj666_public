@@ -3,11 +3,19 @@
   ini_set('display_errors', 'On');
   error_reporting(E_ALL | E_STRICT);
   
+  require_once 'scripts/dbConnect.php';
+  require_once 'scripts/selectQueries.php';
+
+  // Validate the fields upon submission.
   if ($_POST){
-    $siUsername = $_POST["siUsername"];
+    $siUsername = trim($_POST["siUsername"], " \t\n\r\0\x0B"); // Remove trailing whitespace from the field.
     $siPassword = $_POST["siPassword"];
     
-    
+    dbConnect();
+    if (isLoginValid($siUsername, $siPassword)){
+      //header("Location: https://zenit.senecac.on.ca:9064/~jayme/index.php");
+    }
+    dbClose();
   }
 ?>
 <!DOCTYPE html>
