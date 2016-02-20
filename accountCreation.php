@@ -1,4 +1,4 @@
-<?php
+﻿<?php
   // For debugging purposes.
   ini_set('display_errors', 1);
   error_reporting(E_ALL | E_STRICT);
@@ -57,9 +57,8 @@
     // Create a new user account in the database when all fields are valid.
     if ($errorMsg === ""){
       FB::log('Beginning USERS insert');
-      $dob = $acYear."-".$acMonth."-".$acDay; // Date of Birth.
       $acPassword = password_hash($acPassword, PASSWORD_DEFAULT);
-      addUser($dbConn, $acUsername, $acPassword, $acEmail, $dob);
+      addUser($dbConn, $acUsername, $acPassword, $acEmail);
       FB::log('addUser() finished');
     }
     
@@ -95,27 +94,6 @@
       <br><br>
       Email<br>
       <input type="email" name="acEmail" required>
-      <br><br>
-      Date of Birth<br>
-      Month:
-      <select id="acMonth" name="acMonth" onchange="maxDay()">
-        <option value="1">January</option>
-        <option value="2">February</option>
-        <option value="3">March</option>
-        <option value="4">April</option>
-        <option value="5">May</option>
-        <option value="6">June</option>
-        <option value="7">July</option>
-        <option value="8">August</option>
-        <option value="9">September</option>
-        <option value="10">October</option>
-        <option value="11">November</option>
-        <option value="12">December</option>
-      </select>
-      Day:
-      <input type="number" min="1" max="31" name="acDay" required>
-      Year:
-      <input type="number" min="1900" max="<?php echo date("Y"); ?>" name="acYear" required>
       <br><br>
       <input type="submit" value="Submit">
     </form>

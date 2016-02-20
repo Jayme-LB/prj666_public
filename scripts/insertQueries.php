@@ -1,11 +1,11 @@
-<?php
+﻿<?php
   // For debugging purposes.
   ini_set('display_errors', 1);
   error_reporting(E_ALL | E_STRICT);
   mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
   // This function inserts a new account into the database.
   // All arguments are assumed to have already been validated.
-  function addUser($dbConn, $username, $password, $email, $dob){
+  function addUser($dbConn, $username, $password, $email){
     // Add user to USERS table.
     $dbQuery = "INSERT INTO USERS(Username, First_name, Last_name, Email, Status, About, Date_joined, Password)"
     ."VALUES('".$username."', '', '', '".$email."', 'active', '', CURDATE(), '".$password."')";
