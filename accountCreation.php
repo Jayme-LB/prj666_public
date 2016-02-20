@@ -1,12 +1,13 @@
-﻿<?php
+<?php
   // For debugging purposes.
-  ini_set('display_errors', 'On');
+  ini_set('display_errors', 1);
   error_reporting(E_ALL | E_STRICT);
-
-  require_once 'scripts/dbConnect.php';
-  require_once 'scripts/selectQueries.php';
-  require_once 'scripts/insertQueries.php';
+  require '/home/jayme/firephp-core/lib/FirePHPCore/fb.php';
   
+  require 'scripts/dbConnect.php';
+  require 'scripts/selectQueries.php';
+  require 'scripts/insertQueries.php';
+    
   // Validate the fields upon submission.
   if ($_POST){
     $acUsername = trim($_POST["acUsername"], " \t\n\r\0\x0B"); // Remove trailing whitespace from the field.
@@ -24,12 +25,16 @@
       $errorMsg .= "<br><b>Your username must have a minimum of 3 characters.</b>";
     }
     
+    // OPENING DATABASE CONNECTION.
+    $dbConn = dbConnect(); 
+    
     // Check that the username does not exist already.
-    $dbConn = dbConnect();
-    if (usernameExists($dbConn, $acUsername)){
+    $userFound = usernameExists($dbConn, strtolower($acUsername));
+    FB::log('User found status: '.$userFound);
+    if ($userFound){
       $errorMsg .= "<br><b>The chosen username already exists. Please insert a new one.</b>";
     }
-    
+    FB::log('usernameExists() finished');
     
     // Password fields.
     if ($acPassword != $acPasswordConfirm){
@@ -40,15 +45,26 @@
       $errorMsg .= "<br><b>Your password must have a minimum length of 8 characters.</b>";
     }
     
-    // Create a new user account in the database when all fields are valid.
-    if ($errorMsg !== ""){
-      $dbMsg = "Starting connection";
-      $dob = $acYear."-".$acMonth."-".$acDay; // Date of Birth.
-      $dbConn = dbConnect();
-      addUser($acUsername, password_hash($acPassword, PASSWORD_DEFAULT), $acEmail, $dob);
-      mysqli_close($dbConn);
-      $dbMsg = "The connection should have gone through...";
+    // Email field
+    $emailFound = emailExists($dbConn, strtolower($acEmail));
+    FB::log('Email found status: '.$emailFound);
+    if ($emailFound){
+      $errorMsg .= "<br><b>The chosen email address is already in use by another user.</b>";
     }
+    FB::log('emailExists() finished');
+    
+    FB::log('All fields have been checked.');
+    // Create a new user account in the database when all fields are valid.
+    if ($errorMsg === ""){
+      FB::log('Beginning USERS insert');
+      $dob = $acYear."-".$acMonth."-".$acDay; // Date of Birth.
+      $acPassword = password_hash($acPassword, PASSWORD_DEFAULT);
+      addUser($dbConn, $acUsername, $acPassword, $acEmail, $dob);
+      FB::log('addUser() finished');
+    }
+    
+    // CLOSING DATABASE CONNECTION.
+    mysqli_close($dbConn);
   }
 ?>
 <!DOCTYPE html>
@@ -105,22 +121,21 @@
     </form>
 <?php
   if ($_POST){
-    // Below is for debugging purposes.
-    echo "<b>Username:</b>".$acUsername."<br>";
-    echo "<b>Password:</b>".password_hash($acPassword, PASSWORD_DEFAULT)."<br>";
-    echo "<b>Confirm Password:</b>".$acPasswordConfirm."<br>";
-    echo "<b>Email:</b>".$acEmail."<br>";
-    echo "<b>DOB Month:</b>".$acMonth."<br>";
-    echo "<b>DOB Day:</b>".$acDay."<br>";
-    echo "<b>DOB Year:</b>".$acYear."<br>";
-    
     if (isset($errorMsg) && $errorMsg !== ""){
-      echo "<p>We are unable to create an account because of the following:"
-      .$errorMsg
-      ."</p>";
-    }elseif (isset($dbMsg) && $dbMsg !== ""){
-      echo $dbMsg;
+?>
+    <p>We are unable to create an account for you due to the following: <?php echo $errorMsg ?></p>
+<?php
     }
+    // Below is for debugging purposes.
+?>
+    <p><b>Username: </b><?php echo $acUsername ?></p>
+    <p><b>Password: </b><?php echo $acPassword ?></p>
+    <p><b>Confirm Password: </b><?php echo $acPasswordConfirm ?></p>
+    <p><b>Email: </b><?php echo $acEmail ?></p>
+    <p><b>DOB Month: </b><?php echo $acMonth ?></p>
+    <p><b>DOB Day: </b><?php echo $acDay ?></p>
+    <p><b>DOB Year: </b><?php echo $acYear ?></p>
+<?php
   }
 ?>
   </body>
