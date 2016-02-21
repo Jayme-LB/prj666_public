@@ -3,7 +3,7 @@
   ini_set('display_errors', 1);
   error_reporting(E_ALL | E_STRICT);
   mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-  
+    
   // This function finds the given username in the database (in lowercase) and returns true if it exists.
   function usernameExists($dbConn, $username){
     $isFound = true;
@@ -15,9 +15,9 @@
       $dbResult = mysqli_num_rows($dbRows);
       FB::info('mysqli_num_rows: '.$dbResult);
       if ($dbResult > 0){
-        FB::error('Username already in database.');
+        FB::log('Username already in database.');
       }else{
-        FB::log('Username not found in database. New username OK!');
+        FB::log('Username not found in database.');
         $isFound = false;
       }
     }else{
@@ -51,18 +51,34 @@
   }
   
   // This function gets the password of the given user and returns true if it matches the database.
+  // It also rehashes the password as needed.
   function isLoginValid($dbConn, $username, $password){
     $isValid = false;
-    $dbQuery = "SELECT Username, Password "
-    ."FROM USERS "
-    ."WHERE Username = '".$username."' AND Password = '".$password."'";
+    $dbQuery = "SELECT Password FROM USERS WHERE Username = '".$username."' LIMIT 1";
     
-    //TODO Research how to validate a hashed password from the database.
-    // $dbResults = mysqli_query($dbQuery);
+    FB::info('isLoginValid() query: '.$dbQuery);
+    $dbRows = mysqli_query($dbConn, $dbQuery);
+    $dbValues = mysqli_fetch_assoc($dbRows);
+    $dbPassword = $dbValues['Password'];
     
-    // if (mysqli_num_rows($dbResults) > 0){
-      // $isFound = true;
-    // }
+    if (password_verify($password, $dbPassword)){
+      $isValid = true;
+      FB::log('Password is valid!');
+      // Check if the password needs a rehash.
+      if (password_needs_rehash($dbPassword, PASSWORD_DEFAULT)){
+        FB::log('Rehashing password!');
+        $dbPassword = password_hash($password, PASSWORD_DEFAULT);
+        
+        $dbQuery = "UPDATE USERS SET Password = '".$dbPassword."' WHERE Username = '".$username."'";
+        FB::info('Password rehash query: '.$dbQuery);
+        $dbRows = mysqli_query($dbConn, $dbQuery);
+        if ($dbRows){
+          FB::log('Password rehash successful!');
+        }else{
+          FB::error('Password rehash failed: '.mysqli_error($dbConn));
+        }
+      }
+    }
     
     return $isValid;
   }
@@ -75,6 +91,8 @@
     ."WHERE u.UserId = ".$userId;
     
     $dbResults = mysqli_query($dbConn, $dbQuery);
+    
+    //TODO Return User data.
   }
   
   // This function performs a Viz-related search.

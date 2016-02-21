@@ -12,11 +12,11 @@
   </head>
   <body>
     <p>
-      <a href="/~jayme/index.php">Home</a>
-      <a href="/~jayme/signin.php">Sign In</a>
-      <a href="/~jayme/accountCreation.php">Create Account</a>
-      <a href="/~jayme/user/viewUserProfile.php">View User Profile</a>
-      <a href="/~jayme/user/editUserProfile.php">Edit User Profile</a>
+      <a href="index.php">Home</a>
+      <a href="login.php">Login</a>
+      <a href="accountCreation.php">Create Account</a>
+      <a href="user/viewUserProfile.php">View User Profile</a>
+      <a href="user/editUserProfile.php">Edit User Profile</a>
     </p>
 <?php
   if (isset($_GET["id"])){

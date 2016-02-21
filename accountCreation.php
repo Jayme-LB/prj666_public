@@ -1,4 +1,4 @@
-﻿<?php
+<?php
   // For debugging purposes.
   ini_set('display_errors', 1);
   error_reporting(E_ALL | E_STRICT);
@@ -7,16 +7,13 @@
   require 'scripts/dbConnect.php';
   require 'scripts/selectQueries.php';
   require 'scripts/insertQueries.php';
-    
+  
   // Validate the fields upon submission.
   if ($_POST){
     $acUsername = trim($_POST["acUsername"], " \t\n\r\0\x0B"); // Remove trailing whitespace from the field.
     $acPassword = $_POST["acPassword"];
     $acPasswordConfirm = $_POST["acPasswordConfirm"];
     $acEmail = $_POST["acEmail"];
-    $acMonth = $_POST["acMonth"];
-    $acDay = $_POST["acDay"];
-    $acYear = $_POST["acYear"];
     
     $errorMsg = "";
     
@@ -74,11 +71,11 @@
   </head>
   <body>
     <p>
-      <a href="/~jayme/index.php">Home</a>
-      <a href="/~jayme/signin.php">Sign In</a>
-      <a href="/~jayme/accountCreation.php">Create Account</a>
-      <a href="/~jayme/user/viewUserProfile.php">View User Profile</a>
-      <a href="/~jayme/user/editUserProfile.php">Edit User Profile</a>
+      <a href="index.php">Home</a>
+      <a href="login.php">Login</a>
+      <a href="accountCreation.php">Create Account</a>
+      <a href="user/viewUserProfile.php">View User Profile</a>
+      <a href="user/editUserProfile.php">Edit User Profile</a>
     </p>
     <h1>Account Creation</h1>
     <p>All fields are required.</p>
@@ -104,17 +101,7 @@
     <p>We are unable to create an account for you due to the following: <?php echo $errorMsg ?></p>
 <?php
     }
-    // Below is for debugging purposes.
-?>
-    <p><b>Username: </b><?php echo $acUsername ?></p>
-    <p><b>Password: </b><?php echo $acPassword ?></p>
-    <p><b>Confirm Password: </b><?php echo $acPasswordConfirm ?></p>
-    <p><b>Email: </b><?php echo $acEmail ?></p>
-    <p><b>DOB Month: </b><?php echo $acMonth ?></p>
-    <p><b>DOB Day: </b><?php echo $acDay ?></p>
-    <p><b>DOB Year: </b><?php echo $acYear ?></p>
-<?php
   }
-?>
+?>  
   </body>
 </html>
