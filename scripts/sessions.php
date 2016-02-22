@@ -1,6 +1,4 @@
 <?php
-  include '/home/jayme/firephp-core/lib/FirePHPCore/fb.php';
-
   session_start();
 
   if (empty($_SESSION['LoggedIn'])){

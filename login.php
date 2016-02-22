@@ -6,8 +6,7 @@
   
   require 'scripts/dbConnect.php';
   require 'scripts/selectQueries.php';
-  
-  session_start();
+  include 'scripts/sessions.php';
 
   // Validate the fields upon submission.
   if ($_POST){
@@ -51,7 +50,7 @@
   </head>
   <body>
 <?php
-  if (empty($_SESSION['user'])){ // START SESSION HTML
+  if (empty($_SESSION['LoggedIn'])){ // START NO SESSION HTML
 ?>
     <p>
       <a href="index.php">Home</a>
@@ -80,11 +79,12 @@
         echo $errorMsg;
       }
     }
-  }else{ // END SESSION HTML / START NO SESSION HTML
+  }else{ // END NO SESSION HTML / START SESSION HTML
 ?>
-  <p>You are already logged in! <a href="logout.php">Click here</a> to logout or <a href="index.php">click here</a> to return to the main page.</p>
+  <p>You are already logged in! 
+  <a href="logout.php">Click here</a> to logout or <a href="index.php">click here</a> to return to the home page.</p>
 <?php
-  } // END NO SESSION HTML
+  } // END SESSION HTML
 ?>
   </body>
 </html>
