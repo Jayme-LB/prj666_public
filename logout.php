@@ -15,7 +15,7 @@
   if (empty($_SESSION['LoggedIn'])){ // START NO SESSION HTML
 ?>
     <p>You are not logged in! <a href="login.php">Click here</a> to login,
-    <a href="accountCreation">click here</a> to create an account, or 
+    <a href="accountCreation.php">click here</a> to create an account, or 
     <a href="index.php">click here</a> to return to the home page.</p>
 <?php
   }else{ // END NO SESSION HTML / START SESSION HTML
