@@ -83,6 +83,15 @@
     return $isValid;
   }
   
+  // This function gets and returns the ID of the given username.
+  function getUserId($dbConn, $username){
+    $dbQuery = "SELECT Id FROM USERS WHERE Username = '".$username."'";
+    $dbRows = mysqli_query($dbConn, $dbQuery);
+    $dbValues = mysqli_fetch_assoc($dbRows);
+    
+    return $dbValues['Id'];
+  }
+  
   // This function returns the values needed to display the View User Profile page.
   function getViewUserProfile($dbConn, $userId){
     $dbQuery = "SELECT u.Username, u.First_name, u.Last_name, u.About, u.Date_joined, i.Image "

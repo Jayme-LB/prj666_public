@@ -1,4 +1,12 @@
-﻿<!DOCTYPE html>
+<?php
+  // For debugging purposes.
+  ini_set('display_errors', 1);
+  error_reporting(E_ALL | E_STRICT);
+  require '/home/jayme/firephp-core/lib/FirePHPCore/fb.php';
+  
+  
+?>
+<!DOCTYPE html>
 <html>
   <head>
     <meta charset="UTF-8">
@@ -7,7 +15,17 @@
   <body>
     <p>
       <a href="index.php">Home</a>
+      <?php
+        if (!empty($_SESSION['LoggedIn']) && $_SESSION['LoggedIn']){
+      ?>
+      <a href="logout.php">Logout of <?php echo $_SESSION['Username'] ?></a>
+      <?php
+        }else{
+      ?>
       <a href="login.php">Login</a>
+      <?php
+        }
+      ?>
       <a href="accountCreation.php">Create Account</a>
       <a href="user/viewUserProfile.php">View User Profile</a>
       <a href="user/editUserProfile.php">Edit User Profile</a>

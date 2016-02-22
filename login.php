@@ -27,9 +27,13 @@
       $isValid = isLoginValid($dbConn, $loginUsername, $loginPassword);
       FB::log('Login valid? '.($isValid ? 'True' : 'False'));
       if ($isValid){ //TODO Creating PHP sessions for managing user login.
-        FB::info('Login success!');
+        FB::log('Login success! Setting session variables...');
+        $_SESSION['LoggedIn'] = true;
+        $_SESSION['Username'] = $loginUsername;
+        $_SESSION['UserId'] = getUserId($dbConn, $loginUsername);
+        FB::info('LoggedIn: '.$_SESSION['LoggedIn'].', Username: '.$_SESSION['Username'].', UserId: '.$_SESSION['UserId']);
       }else{
-        $errorMsg = "<b>Your username and/or password is incorrect. Please try again.</b>";
+        $errorMsg = "<b>Your password is incorrect. Please try again.</b>";
       }
     }else{
       $errorMsg = "<b>That username was not found. Please select an existing username.</b>";
