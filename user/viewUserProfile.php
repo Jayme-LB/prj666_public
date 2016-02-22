@@ -2,7 +2,16 @@
   // For debugging purposes.
   ini_set('display_errors', 'On');
   error_reporting(E_ALL | E_STRICT);
+  include '/home/jayme/firephp-core/lib/FirePHPCore/fb.php';
+  
+  require 'scripts/dbConnect.php';
+  require 'scripts/selectQueries.php';
 
+  // OPENING DATABASE CONNECTION.
+  $dbConn = dbConnect();
+  
+  // CLOSING DATABASE CONNECTION.
+  mysqli_close($dbConn);
 ?>
 <!DOCTYPE html>
   <html>

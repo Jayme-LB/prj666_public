@@ -8,7 +8,7 @@
   // All arguments are assumed to have already been validated.
   function addUser($dbConn, $username, $password, $email){
     // Add user to USERS table.
-    $dbQuery = "INSERT INTO USERS(Username, First_name, Last_name, Email, Status, About, Date_joined, Password)"
+    $dbQuery = "INSERT INTO USERS(Username, First_name, Last_name, Email, Status, About, Date_joined, Password) "
     ."VALUES('".$username."', '', '', '".$email."', 'active', '', CURDATE(), '".$password."')";
     
     FB::info('addUser() query:'.$dbQuery);

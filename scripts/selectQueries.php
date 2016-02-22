@@ -52,11 +52,11 @@
   
   // This function gets the password of the given user and returns true if it matches the database.
   // It also rehashes the password as needed.
-  function isLoginValid($dbConn, $username, $password){
+  function passwordExists($dbConn, $username, $password){
     $isValid = false;
     $dbQuery = "SELECT Password FROM USERS WHERE Username = '".$username."' LIMIT 1";
     
-    FB::info('isLoginValid() query: '.$dbQuery);
+    FB::info('passwordExists() query: '.$dbQuery);
     $dbRows = mysqli_query($dbConn, $dbQuery);
     $dbValues = mysqli_fetch_assoc($dbRows);
     $dbPassword = $dbValues['Password'];

@@ -2,7 +2,7 @@
   // For debugging purposes.
   ini_set('display_errors', 1);
   error_reporting(E_ALL | E_STRICT);
-  require '/home/jayme/firephp-core/lib/FirePHPCore/fb.php';
+  include '/home/jayme/firephp-core/lib/FirePHPCore/fb.php';
   
   require 'scripts/dbConnect.php';
   require 'scripts/selectQueries.php';
@@ -24,7 +24,7 @@
     FB::log('User found status: '.($userFound ? 'True' : 'False'));
     if ($userFound){
       // Check that the password is correct for the user.
-      $isValid = isLoginValid($dbConn, $loginUsername, $loginPassword);
+      $isValid = passwordExists($dbConn, $loginUsername, $loginPassword);
       FB::log('Login valid? '.($isValid ? 'True' : 'False'));
       if ($isValid){ //TODO Creating PHP sessions for managing user login.
         FB::log('Login success! Setting session variables...');
