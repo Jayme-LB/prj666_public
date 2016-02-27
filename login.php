@@ -70,8 +70,8 @@
         <input type="submit" value="Login">
     </form>
     <p>
-      <a href="accountCreation.php">Register</a>
-      <!-- <a href="resetPassword.php">Forgot Password?</a> -->
+      <a href="accountCreation.php">Register Account</a>
+      <a href="resetPassword.php">Forgot Password?</a>
     </p>
 <?php
     if ($_POST){
